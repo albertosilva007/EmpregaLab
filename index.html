@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Trilhas de Desenvolvimento</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #faf5ff 0%, #eff6ff 50%, #f0fdf4 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            padding: 1.5rem;
+            border-bottom: 4px solid #a855f7;
+            border-radius: 1rem 1rem 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .icon-container {
+            background: #a855f7;
+            padding: 0.75rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-container svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+            stroke: white;
+            fill: none;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .header-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #a855f7;
+        }
+
+        .messages-container {
+            padding: 1.5rem;
+            height: 600px;
+            overflow-y: auto;
+        }
+
+        .message-wrapper {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .message-wrapper.user {
+            justify-content: flex-end;
+        }
+
+        .message-wrapper.bot {
+            justify-content: flex-start;
+        }
+
+        .message {
+            max-width: 80%;
+        }
+
+        .message-bubble {
+            padding: 1rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .message-bubble.user {
+            background: #a855f7;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .message-bubble.bot {
+            background: #f3f4f6;
+            color: #1f2937;
+            border-bottom-left-radius: 0;
+        }
+
+        .message-timestamp {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 0.25rem;
+        }
+
+        .message-timestamp.user {
+            text-align: right;
+        }
+
+        .options-container {
+            margin-top: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .option-button {
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: white;
+            border: 2px solid #e9d5ff;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-button:hover {
+            border-color: #a855f7;
+            background: #faf5ff;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .module-card {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, white 0%, #f9fafb 100%);
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .module-card:hover {
+            border-color: #a855f7;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .module-icon {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .module-card:hover .module-icon {
+            transform: scale(1.1);
+        }
+
+        .module-icon svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+            stroke: white;
+            fill: none;
+        }
+
+        .module-icon.yellow {
+            background: #eab308;
+        }
+
+        .module-icon.blue {
+            background: #3b82f6;
+        }
+
+        .module-icon.green {
+            background: #22c55e;
+        }
+
+        .module-icon.purple {
+            background: #a855f7;
+        }
+
+        .module-content {
+            flex: 1;
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-title {
+            font-weight: bold;
+            color: #1f2937;
+            font-size: 0.95rem;
+        }
+
+        .module-emoji {
+            font-size: 1.5rem;
+        }
+
+        .module-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .typing-indicator {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .typing-bubble {
+            background: #f3f4f6;
+            border-radius: 1rem;
+            border-bottom-left-radius: 0;
+            padding: 1rem;
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #9ca3af;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .input-area {
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+            border-radius: 0 0 1rem 1rem;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .text-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .text-input:focus {
+            border-color: #a855f7;
+        }
+
+        .send-button {
+            padding: 0.75rem 1.5rem;
+            background: #a855f7;
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .send-button:hover {
+            background: #9333ea;
+        }
+
+        .info-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .messages-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Ícones SVG
+        const MessageCircle = () => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+        );
+
+        const TrendingUp = () => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+        );
+
+        const Users = () => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+        );
+
+        const Target = () => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+        );
+
+        const ChatbotTrilhas = () => {
+          const [messages, setMessages] = useState([]);
+          const [currentStep, setCurrentStep] = useState('menu');
+          const [currentModule, setCurrentModule] = useState(null);
+          const [userName, setUserName] = useState('');
+          const [waitingForResponse, setWaitingForResponse] = useState(false);
+          const messagesEndRef = useRef(null);
+          const inputRef = useRef(null);
+
+          const modules = {
+            produtividade: {
+              name: 'Produtividade e Aprendizagem Contínua',
+              icon: TrendingUp,
+              color: 'yellow',
+              emoji: '🐝',
+              description: 'Aprenda a ser mais produtivo e desenvolver aprendizado contínuo'
+            },
+            lideranca: {
+              name: 'Liderança e Trabalho em Equipe',
+              icon: Users,
+              color: 'blue',
+              emoji: '⚽',
+              description: 'Desenvolva habilidades de liderança e trabalho colaborativo'
+            },
+            adaptabilidade: {
+              name: 'Adaptabilidade e Resiliência',
+              icon: Target,
+              color: 'green',
+              emoji: '🌵',
+              description: 'Fortaleça sua capacidade de enfrentar desafios e mudanças'
+            },
+            comunicacao: {
+              name: 'Comunicação Inclusiva e Geracional',
+              icon: MessageCircle,
+              color: 'purple',
+              emoji: '🌉',
+              description: 'Aprenda a se comunicar de forma clara e respeitosa com todos'
+            }
+          };
+
+          const scrollToBottom = () => {
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+          };
+
+          useEffect(() => {
+            scrollToBottom();
+          }, [messages]);
+
+          useEffect(() => {
+            addBotMessage('Oi! Bem-vindo ao Chat das Trilhas de Desenvolvimento! 😊\n\nQual seu nome?');
+          }, []);
+
+          const addBotMessage = (text, options = null, delay = 500) => {
+            setTimeout(() => {
+              setMessages(prev => [...prev, { 
+                type: 'bot', 
+                text, 
+                options,
+                timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+              }]);
+              setWaitingForResponse(false);
+            }, delay);
+          };
+
+          const addUserMessage = (text) => {
+            setMessages(prev => [...prev, { 
+              type: 'user', 
+              text,
+              timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            }]);
+            setWaitingForResponse(true);
+          };
+
+          const handleUserInput = (input) => {
+            addUserMessage(input);
+
+            if (currentStep === 'menu' && !userName) {
+              setUserName(input);
+              setTimeout(() => {
+                addBotMessage(`Prazer, ${input}! 👋\n\nEscolha uma trilha para começarmos:`);
+                setCurrentStep('selectModule');
+              }, 800);
+              return;
+            }
+
+            // Processar resposta baseado no módulo e step
+            processModuleFlow(input);
+          };
+
+          const processModuleFlow = (input) => {
+            // Seleção de módulo
+            if (currentStep === 'selectModule' && !currentModule) {
+              if (input === 'produtividade') {
+                setCurrentModule('produtividade');
+                setCurrentStep('prod_intro');
+                addBotMessage(
+                  'Me diga uma coisa… já teve dia que você trabalhou o dia todinho e no fim pensou:\n\n"Oxente, fiz tanto e parece que não fiz nada"? 😅\n\nPois é! Às vezes a gente corre demais e esquece de pensar se tá correndo pro lado certo.\nProdutividade não é fazer tudo — é fazer o que realmente importa.'
+                );
+                setTimeout(() => {
+                  addBotMessage('E quando as tarefas acumulam, como é que você reage?', [
+                    { label: 'Fico agoniado e tento resolver tudo de uma vez 😰', value: 'a' },
+                    { label: 'Faço o que dá, um de cada vez 😅', value: 'b' },
+                    { label: 'Me organizo e planejo o que é mais importante 💪', value: 'c' }
+                  ], 1500);
+                }, 1000);
+              } else if (input === 'lideranca') {
+                setCurrentModule('lideranca');
+                setCurrentStep('lid_intro');
+                addBotMessage(
+                  'Rapaz, já viu como é puxado liderar gente diferente?\nCada um pensa de um jeito, fala de outro e reage de outro.\nMas é aí que mora a beleza: liderar é entender pessoas, não controlar tarefas.\n\nBora bater um papo sobre isso?'
+                );
+                setTimeout(() => {
+                  addBotMessage('Quando você pensa em um bom líder, o que vem na cabeça?', [
+                    { label: 'Dá o exemplo', value: 'exemplo' },
+                    { label: 'Escuta e apoia', value: 'escuta' },
+                    { label: 'Motiva o grupo', value: 'motiva' },
+                    { label: 'Cobra demais', value: 'cobra' }
+                  ], 1500);
+                }, 1000);
+              } else if (input === 'adaptabilidade') {
+                setCurrentModule('adaptabilidade');
+                setCurrentStep('adapt_intro');
+                addBotMessage(
+                  'Conhece o mandacaru, né? Aquele que cresce firme no meio da seca, mas quando a chuva vem, floresce bonito? 🌵\n\nPois é, hoje a conversa é sobre ser assim também: resistente e cheio de vida!\n\nNa vida, nem tudo sai como a gente planeja.\nÀs vezes o patrão muda o horário, a venda cai, o ônibus atrasa, ou aparece um problema que ninguém esperava.'
+                );
+                setTimeout(() => {
+                  addBotMessage('Quando aparece um imprevisto, qual dessas frases parece mais com você?', [
+                    { label: 'Desespero logo, fico sem saber o que fazer 😰', value: 'desespero' },
+                    { label: 'Reclamo, mas depois dou um jeito 😅', value: 'reclamo' },
+                    { label: 'Penso positivo e me viro como posso 💪', value: 'pensopositivo' }
+                  ], 1500);
+                }, 1000);
+              } else if (input === 'comunicacao') {
+                setCurrentModule('comunicacao');
+                setCurrentStep('com_intro');
+                addBotMessage(
+                  'Me diga uma coisa… você já tentou explicar algo pra alguém e a pessoa entendeu tudinho errado?\n\nOu falou com outra pessoa e parecia que ela tava falando outra língua?\n\nPois é… comunicação não é só falar.\nÉ fazer o outro compreender.'
+                );
+                setTimeout(() => {
+                  addBotMessage('E quando você conversa com pessoas de idades diferentes, jovens, adultos, idosos, como é que você costuma agir?', [
+                    { label: 'Falo do mesmo jeito com todo mundo', value: 'mesmo_jeito' },
+                    { label: 'Tento mudar o jeito de explicar', value: 'mudo_jeito' },
+                    { label: 'Fico meio perdido, sem saber como falar', value: 'perdido' }
+                  ], 1500);
+                }, 1000);
+              } else {
+                setCurrentModule(input);
+                const module = modules[input];
+                addBotMessage(`Você escolheu: ${module.name} ${module.emoji}\n\nEm breve disponível com conteúdo completo!`, null, 1000);
+                setTimeout(() => {
+                  addBotMessage('Quer explorar outra trilha?', [
+                    { label: '🎯 Voltar ao menu', value: 'menu' },
+                    { label: '🐝 Produtividade', value: 'ir_produtividade' },
+                    { label: '⚽ Liderança', value: 'ir_lideranca' },
+                    { label: '🌵 Adaptabilidade', value: 'ir_adaptabilidade' }
+                  ], 2000);
+                }, 1000);
+              }
+              return;
+            }
+
+            // Fluxo da trilha de Produtividade
+            if (currentModule === 'produtividade') {
+              if (currentStep === 'prod_intro') {
+                let response = '';
+                if (input === 'a') response = 'Vixe, quem nunca? Mas sabia que isso mais atrapalha do que ajuda? O segredo é respirar e começar por uma coisa só.';
+                else if (input === 'b') response = 'Já é um passo! Um de cada vez, o que importa é não parar.';
+                else if (input === 'c') response = 'Arretado! Produtividade começa na clareza, e não na pressa.';
+                
+                addBotMessage(response);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Produtividade é igual receita de bolo: se tentar fazer tudo de uma vez, queima. 🍰\nTem que medir, misturar e esperar o tempo certo.\n\nMas afinal, o que é produtividade?\n\nÉ saber usar o tempo e os recursos de forma eficiente pra fazer o que tem valor — sem se acabar de cansaço.\nÉ trabalhar com propósito e foco, e não no automático.\n\nJá a aprendizagem contínua é a vontade de nunca parar de aprender — é manter a cabeça curiosa, aberta ao novo e disposta a melhorar sempre um pouquinho.\n\nQuem junta as duas coisas, cresce igual planta boa em terra fértil: firme, produtiva e sempre florescendo. 🌱'
+                  );
+                  setCurrentStep('prod_historia');
+                }, 2000);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Pra deixar isso mais claro, deixa eu te contar o caso de seu Pedro, agricultor lá de Arcoverde. 🌾\n\nEle sempre plantou feijão e milho do mesmo jeito, seguindo o costume do pai.\nMas nos últimos anos, a chuva andou diferente e a colheita começou a cair.\n\nEm vez de desistir, seu Pedro procurou o pessoal da cooperativa, aprendeu sobre irrigação por gotejamento e começou a testar um novo jeito de plantar.\n\nNo começo, achou difícil — mas foi insistindo, anotando os resultados e aprendendo com os erros.\nHoje, colhe mais com menos gasto de água e ainda ensina os vizinhos a fazer o mesmo. 💧🌽\n\nIsso é produtividade e aprendizagem contínua: melhorar o que já sabe e continuar aprendendo pra fazer ainda melhor.'
+                  );
+                }, 4000);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Uma dica boa é o método dos 25 minutos — você trabalha focado esse tempo, faz uma pausa de 5 minutos e depois volta.\nO cérebro agradece e o corpo também.\n\nMas ó, não adianta só produzir… tem que aprender sempre também.\nA vida muda num piscar de olhos, e quem fica parado perde o ritmo.\n\nVocê costuma buscar aprender coisas novas no dia a dia?',
+                    [
+                      { label: 'Sim, gosto de aprender todo dia', value: 'aprende_sim' },
+                      { label: 'Às vezes, quando sobra tempo', value: 'aprende_as_vezes' },
+                      { label: 'Quase nunca, tô sempre na correria', value: 'aprende_nunca' }
+                    ]
+                  );
+                }, 6000);
+              }
+              else if (currentStep === 'prod_historia') {
+                let respAprendizado = '';
+                if (input === 'aprende_sim') respAprendizado = 'Que beleza! Isso é o que te mantém crescendo e com a mente viva.';
+                else if (input === 'aprende_as_vezes') respAprendizado = 'Perfeito! Mas tente ver o aprendizado como parte da rotina, não só quando dá.';
+                else if (input === 'aprende_nunca') respAprendizado = 'Eu sei! Mas até no meio da correria dá pra aprender algo — basta prestar atenção.';
+                
+                addBotMessage(respAprendizado);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Agora, quero te lançar o Desafio da Abelha Trabalhadeira 🐝\n\nPega um papel (ou o celular mesmo) e anota:\n\na) Uma coisa que você quer aprender ainda este mês.\nb) Um hábito que quer melhorar pra render mais.\n\nDepois, pense:\n"O que posso fazer hoje pra começar?"\n\nVocê aceita o desafio?',
+                    [
+                      { label: 'Aceito! Vou fazer isso hoje', value: 'desafio_sim' },
+                      { label: 'Vou pensar com calma', value: 'desafio_pensar' }
+                    ]
+                  );
+                  setCurrentStep('prod_desafio');
+                }, 2000);
+              }
+              else if (currentStep === 'prod_desafio') {
+                let respDesafio = input === 'desafio_sim' 
+                  ? 'Maravilha! Um passo pequeno por dia vale mais que um grande só na vontade.' 
+                  : 'Arretado! A mudança começa quando a gente decide cuidar da rotina.';
+                
+                addBotMessage(respDesafio);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Produtividade e aprendizado andam juntos, visse?\nNão adianta só correr, tem que saber pra onde tá indo — e aproveitar o caminho pra crescer.\n\nQual dessas frases combina mais com seu jeito de trabalhar?',
+                    [
+                      { label: 'Devagar, mas constante', value: 'devagar' },
+                      { label: 'Faço mil coisas ao mesmo tempo', value: 'mil_coisas' },
+                      { label: 'Gosto de planejar e executar', value: 'planejar' }
+                    ]
+                  );
+                  setCurrentStep('prod_final');
+                }, 2000);
+              }
+              else if (currentStep === 'prod_final') {
+                let respFinal = '';
+                if (input === 'devagar') respFinal = 'Perfeito! Constância vale mais que velocidade.';
+                else if (input === 'mil_coisas') respFinal = 'Cuidado pra não cansar antes da linha de chegada.';
+                else if (input === 'planejar') respFinal = 'Aí sim! Isso é produtividade inteligente.';
+                
+                addBotMessage(respFinal);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Então, meu povo, lembrem-se: ser produtivo não é ser apressado, é ser intencional.\nE aprender sempre é o que faz a gente florescer de novo, toda vez que o mundo muda. 🌻\n\nQuando o cansaço bater, pare um pouco, respire e lembre:\n\nAté a abelha descansa entre uma flor e outra — mas nunca deixa de buscar o mel. 🍯\n\n✅ Módulo concluído!'
+                  );
+                  setCurrentStep('modulo_concluido');
+                }, 2000);
+                setTimeout(() => {
+                  addBotMessage('Quer explorar outro módulo?', [
+                    { label: '🎯 Voltar ao menu', value: 'menu' },
+                    { label: '⚽ Liderança e Trabalho em Equipe', value: 'ir_lideranca' }
+                  ]);
+                }, 4000);
+              }
+              else if (currentStep === 'modulo_concluido') {
+                if (input === 'menu') {
+                  resetToMenu();
+                } else if (input === 'ir_lideranca') {
+                  setCurrentModule('lideranca');
+                  setCurrentStep('lid_intro');
+                  addBotMessage(
+                    'Rapaz, já viu como é puxado liderar gente diferente?\nCada um pensa de um jeito, fala de outro e reage de outro.\nMas é aí que mora a beleza: liderar é entender pessoas, não controlar tarefas.\n\nBora bater um papo sobre isso?'
+                  );
+                  setTimeout(() => {
+                    addBotMessage('Quando você pensa em um bom líder, o que vem na cabeça?', [
+                      { label: 'Dá o exemplo', value: 'exemplo' },
+                      { label: 'Escuta e apoia', value: 'escuta' },
+                      { label: 'Motiva o grupo', value: 'motiva' },
+                      { label: 'Cobra demais', value: 'cobra' }
+                    ], 1500);
+                  }, 1000);
+                }
+              }
+              return;
+            }
+
+            // Fluxo da trilha de Liderança
+            if (currentModule === 'lideranca') {
+              if (currentStep === 'lid_intro') {
+                let response = '';
+                if (input === 'exemplo') response = 'Show! Liderar é mais sobre atitude do que sobre cargo.';
+                else if (input === 'escuta') response = 'Isso é ouro! Um bom líder é aquele que sabe ouvir o que não é dito.';
+                else if (input === 'motiva') response = 'Perfeito! Motivação vem do propósito.';
+                else if (input === 'cobra') response = 'Cuidado, líder que só cobra cria medo, não confiança.';
+                
+                addBotMessage(response);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Sabia que o líder não precisa ter todas as respostas?\nO segredo tá em construir junto.\n\nExiste um estilo de liderança chamado liderança servidora, que foca em ajudar o time a crescer.\nÉ tipo o capitão do time que joga junto, incentiva e comemora cada vitória da equipe. ⚽'
+                  );
+                  setCurrentStep('lid_bastao');
+                }, 2000);
+                setTimeout(() => {
+                  addBotMessage(
+                    '**O desafio do bastão** 🏃\n\nImagina uma corrida de revezamento. Se o corredor não passar bem o bastão, o time perde tempo, né?\nNa equipe é igual: comunicação e confiança são o bastão.\n\nO que mais atrapalha sua equipe hoje?',
+                    [
+                      { label: 'Falta de diálogo', value: 'dialogo' },
+                      { label: 'Falta de confiança', value: 'confianca' },
+                      { label: 'Ego e competição', value: 'ego' },
+                      { label: 'Falta de clareza nas tarefas', value: 'clareza' }
+                    ]
+                  );
+                }, 4000);
+              }
+              else if (currentStep === 'lid_bastao') {
+                let respBastao = '';
+                if (input === 'dialogo') respBastao = 'Bora conversar mais e evitar suposições.';
+                else if (input === 'confianca') respBastao = 'Confiança nasce de pequenas entregas cumpridas.';
+                else if (input === 'ego') respBastao = 'Equipe não é corrida de quem brilha mais, é coreografia.';
+                else if (input === 'clareza') respBastao = 'Comunicação clara é o primeiro ato de liderança.';
+                
+                addBotMessage(respBastao);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Agora pare um pouco e pense:\nComo você reage quando o grupo não te ouve ou não faz o que você pediu?',
+                    [
+                      { label: 'Fico bravo(a) e resolvo sozinho', value: 'resolvo_sozinho' },
+                      { label: 'Tento conversar e entender', value: 'converso' },
+                      { label: 'Desisto e deixo pra lá', value: 'desisto' },
+                      { label: 'Peço ajuda e redistribuo', value: 'peco_ajuda' }
+                    ]
+                  );
+                  setCurrentStep('lid_reacao');
+                }, 2000);
+              }
+              else if (currentStep === 'lid_reacao') {
+                let respReacao = '';
+                if (input === 'resolvo_sozinho') respReacao = 'Cuidado! Isso desmotiva o grupo e te sobrecarrega.';
+                else if (input === 'converso') respReacao = 'Boa! Comunicação resolve 80% dos conflitos.';
+                else if (input === 'desisto') respReacao = 'Evitar conflito também é uma escolha, mas pode custar caro depois.';
+                else if (input === 'peco_ajuda') respReacao = 'Excelente! Líder que pede ajuda mostra força, não fraqueza.';
+                
+                addBotMessage(respReacao);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Sabe o que diferencia o líder bom do líder incrível?\nO **feedback com empatia**.\nSaber dizer a verdade sem machucar e elogiar sem bajular.\n\nExemplo:\n"Maria, percebi que você se esforçou muito nesse projeto. Que tal ajustarmos juntos esse ponto aqui?"\n\nBora tentar dar um feedback hoje pra alguém do seu grupo?',
+                    [
+                      { label: 'Bora! Vou fazer isso', value: 'feedback_sim' },
+                      { label: 'Fico sem jeito...', value: 'feedback_sem_jeito' }
+                    ]
+                  );
+                  setCurrentStep('lid_feedback');
+                }, 2000);
+              }
+              else if (currentStep === 'lid_feedback') {
+                let respFeedback = input === 'feedback_sim'
+                  ? 'Excelente! Escolha um colega e diga algo que ele fez bem. Depois, se couber, uma sugestão de melhoria.'
+                  : 'Normal! Comece elogiando, o resto vem naturalmente. 😊';
+                
+                addBotMessage(respFeedback);
+                setTimeout(() => {
+                  addBotMessage(
+                    '**Desafio do dia:** 🎯\n\n1. Escolha alguém do grupo.\n2. Faça uma pergunta poderosa:\n   "O que posso fazer pra te ajudar no seu trabalho?"\n3. Escute de verdade.\n\nEsse simples gesto é o que cria líderes de verdade.'
+                  );
+                  setCurrentStep('lid_final');
+                }, 2000);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Continue praticando:\n\n• Escute mais do que fala\n• Reconheça sempre\n• Divida responsabilidades\n• E inspire pelo exemplo\n\n💬 "Sozinhos, vamos mais rápido. Juntos, vamos mais longe."\n\n✅ Módulo concluído!'
+                  );
+                }, 4000);
+                setTimeout(() => {
+                  addBotMessage('Quer explorar outro módulo?', [
+                    { label: '🎯 Voltar ao menu', value: 'menu' },
+                    { label: '🌵 Adaptabilidade e Resiliência', value: 'ir_adaptabilidade' },
+                    { label: '🌉 Comunicação Inclusiva', value: 'ir_comunicacao' }
+                  ]);
+                  setCurrentStep('modulo_concluido');
+                }, 6000);
+              }
+              else if (currentStep === 'modulo_concluido') {
+                if (input === 'menu') {
+                  resetToMenu();
+                } else if (input === 'ir_adaptabilidade') {
+                  setCurrentModule('adaptabilidade');
+                  setCurrentStep('adapt_intro');
+                  addBotMessage(
+                    'Conhece o mandacaru, né? Aquele que cresce firme no meio da seca, mas quando a chuva vem, floresce bonito? 🌵\n\nPois é, hoje a conversa é sobre ser assim também: resistente e cheio de vida!\n\nNa vida, nem tudo sai como a gente planeja.\nÀs vezes o patrão muda o horário, a venda cai, o ônibus atrasa, ou aparece um problema que ninguém esperava.'
+                  );
+                  setTimeout(() => {
+                    addBotMessage('Quando aparece um imprevisto, qual dessas frases parece mais com você?', [
+                      { label: 'Desespero logo, fico sem saber o que fazer 😰', value: 'desespero' },
+                      { label: 'Reclamo, mas depois dou um jeito 😅', value: 'reclamo' },
+                      { label: 'Penso positivo e me viro como posso 💪', value: 'pensopositivo' }
+                    ], 1500);
+                  }, 1000);
+                } else if (input === 'ir_comunicacao') {
+                  setCurrentModule('comunicacao');
+                  setCurrentStep('com_intro');
+                  addBotMessage('Em breve: Trilha de Comunicação completa!');
+                }
+              }
+              return;
+            }
+
+            // Fluxo da trilha de Adaptabilidade
+            if (currentModule === 'adaptabilidade') {
+              if (currentStep === 'adapt_intro') {
+                let response = '';
+                if (input === 'desespero') response = 'Acontece demais, visse? O segredo é aprender a respirar e pensar no que dá pra fazer, em vez de só se preocupar.';
+                else if (input === 'reclamo') response = 'Rapaz, já é meio caminho andado! Quem reclama, mas se vira, já tá praticando adaptabilidade.';
+                else if (input === 'pensopositivo') response = 'Arretado! Essa é a força do nordestino: até tropeça, mas não cai.';
+                
+                addBotMessage(response);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Deixa eu te falar um pouco sobre esse negócio de adaptabilidade e resiliência...\n\nSão duas palavras que parecem difíceis, mas têm um significado simples.\n\n**Adaptabilidade** - é quando a gente muda o jeito de fazer, mas sem perder o rumo.\n\n**Resiliência** - é quando a vida dá pancada e a gente se levanta mais forte.\n\nÉ tipo o cabra que planta: se a chuva não vem, ele muda o tempo do plantio, mas não desiste da roça.'
+                  );
+                  setCurrentStep('adapt_historia');
+                }, 2000);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Deixa eu te contar o caso de **dona Tereza**, costureira aqui do interior. 🧵\n\nQuando veio a pandemia, as encomendas de roupa pararam.\nMas em vez de cruzar os braços, ela começou a costurar máscara de pano.\nNo começo, não vendia muito, mas ela insistiu — e deu certo!\n\nHoje, tá com a lojinha dela de novo, firme e sorridente. 😊'
+                  );
+                }, 4000);
+                setTimeout(() => {
+                  addBotMessage('E você, já passou por uma situação em que precisou se reinventar?', [
+                    { label: 'Sim, e aprendi muito com isso', value: 'sim_aprendi' },
+                    { label: 'Sim, mas foi difícil demais', value: 'sim_dificil' },
+                    { label: 'Ainda não, mas sei que o dia chega', value: 'ainda_nao' }
+                  ]);
+                }, 6000);
+              }
+              else if (currentStep === 'adapt_historia') {
+                let respReinvencao = '';
+                if (input === 'sim_aprendi') respReinvencao = 'Que beleza! Cada queda é uma lição valiosa.';
+                else if (input === 'sim_dificil') respReinvencao = 'Eu sei que não é fácil, mas você passou por isso e tá aqui, firme.';
+                else if (input === 'ainda_nao') respReinvencao = 'Pois é! A vida é assim, o importante é estar preparado.';
+                
+                addBotMessage(respReinvencao);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Pois é, meu amigo(a). A vida é assim: cada queda é uma lição.\nO importante é não deixar o medo te secar, igual mandacaru que guarda força pra florescer.\n\n**Desafio do Mandacaru** 🌵\n\nAgora quero te lançar um desafio.\nPensa em uma situação difícil que você tá passando, pode ser no trabalho, em casa ou no coração.\n\nAgora se pergunte:\n• O que ainda dá pra fazer nessa situação?\n• Que coisa pequena eu posso mudar hoje pra melhorar?'
+                  );
+                  setCurrentStep('adapt_desafio');
+                }, 2000);
+                setTimeout(() => {
+                  addBotMessage('Você aceita esse desafio de reflexão?', [
+                    { label: 'Aceito, vou refletir sobre isso', value: 'aceito' },
+                    { label: 'Vou pensar depois', value: 'depois' }
+                  ]);
+                }, 4000);
+              }
+              else if (currentStep === 'adapt_desafio') {
+                let respDesafio = input === 'aceito'
+                  ? 'Que resposta boa! Isso é coragem. Continue firme, um passo por vez.'
+                  : 'Mesmo que seja difícil, só de pensar diferente já é sinal de força, visse?';
+                
+                addBotMessage(respDesafio);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Ser resiliente não é fingir que tá tudo bem.\nÉ admitir que doeu, aprender com o tombo e levantar com mais sabedoria.\n\nQual dessas frases combina mais com sua forma de ver a vida?',
+                    [
+                      { label: 'Tudo dá certo no fim', value: 'da_certo' },
+                      { label: 'O que não mata, ensina', value: 'ensina' },
+                      { label: 'Melhor rir do que chorar', value: 'rir' }
+                    ]
+                  );
+                  setCurrentStep('adapt_final');
+                }, 2000);
+              }
+              else if (currentStep === 'adapt_final') {
+                addBotMessage('Qualquer uma dessas já mostra um olhar positivo, meu povo.\nO importante é não se entregar, a gente pode até cansar, mas não quebra!');
+                setTimeout(() => {
+                  addBotMessage(
+                    'Então, meu povo, quando a vida apertar **seja como o mandacaru** 🌵\n\nAguente firme e depois floresça bonito, siga confiante.\n\n✅ Módulo concluído!'
+                  );
+                  setCurrentStep('modulo_concluido');
+                }, 2000);
+                setTimeout(() => {
+                  addBotMessage('Quer explorar outro módulo?', [
+                    { label: '🎯 Voltar ao menu', value: 'menu' },
+                    { label: '🌉 Comunicação Inclusiva', value: 'ir_comunicacao' },
+                    { label: '🐝 Produtividade', value: 'ir_produtividade' }
+                  ]);
+                }, 4000);
+              }
+              else if (currentStep === 'modulo_concluido') {
+                if (input === 'menu') {
+                  resetToMenu();
+                } else if (input === 'ir_comunicacao') {
+                  setCurrentModule('comunicacao');
+                  setCurrentStep('com_intro');
+                  addBotMessage(
+                    'Me diga uma coisa… você já tentou explicar algo pra alguém e a pessoa entendeu tudinho errado?\n\nOu falou com outra pessoa e parecia que ela tava falando outra língua?\n\nPois é… comunicação não é só falar.\nÉ fazer o outro compreender.'
+                  );
+                  setTimeout(() => {
+                    addBotMessage('E quando você conversa com pessoas de idades diferentes, jovens, adultos, idosos, como é que você costuma agir?', [
+                      { label: 'Falo do mesmo jeito com todo mundo', value: 'mesmo_jeito' },
+                      { label: 'Tento mudar o jeito de explicar', value: 'mudo_jeito' },
+                      { label: 'Fico meio perdido, sem saber como falar', value: 'perdido' }
+                    ], 1500);
+                  }, 1000);
+                } else if (input === 'ir_produtividade') {
+                  setCurrentModule('produtividade');
+                  setCurrentStep('prod_intro');
+                  addBotMessage(
+                    'Me diga uma coisa… já teve dia que você trabalhou o dia todinho e no fim pensou:\n\n"Oxente, fiz tanto e parece que não fiz nada"? 😅\n\nPois é! Às vezes a gente corre demais e esquece de pensar se tá correndo pro lado certo.\nProdutividade não é fazer tudo — é fazer o que realmente importa.'
+                  );
+                  setTimeout(() => {
+                    addBotMessage('E quando as tarefas acumulam, como é que você reage?', [
+                      { label: 'Fico agoniado e tento resolver tudo de uma vez 😰', value: 'a' },
+                      { label: 'Faço o que dá, um de cada vez 😅', value: 'b' },
+                      { label: 'Me organizo e planejo o que é mais importante 💪', value: 'c' }
+                    ], 1500);
+                  }, 1000);
+                }
+              }
+              return;
+            }
+
+            // Fluxo da trilha de Comunicação
+            if (currentModule === 'comunicacao') {
+              if (currentStep === 'com_intro') {
+                let response = '';
+                if (input === 'mesmo_jeito') response = 'Às vezes funciona, visse? Mas nem todo mundo entende as coisas do mesmo jeito.';
+                else if (input === 'mudo_jeito') response = 'Arretado! Isso já é comunicação inclusiva: adaptar sem perder respeito.';
+                else if (input === 'perdido') response = 'Normal demais! Comunicação é treino, ninguém nasce sabendo.';
+                
+                addBotMessage(response);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Então… o que é **Comunicação Inclusiva?**\n\nÉ quando a gente conversa de um jeito que todo mundo entende e se sente respeitado, independente de idade, cultura, escolaridade, deficiência, sotaque ou jeito de viver.\n\nComunicação inclusiva é:\n✔ Clara\n✔ Empática\n✔ Respeitosa\n✔ Acolhedora\n✔ Sem preconceitos\n✔ Sem termos confusos\n\nÉ falar com o coração, não só com a boca. ❤️'
+                  );
+                  setCurrentStep('com_conceitos');
+                }, 2000);
+                setTimeout(() => {
+                  addBotMessage(
+                    'E o que é **Comunicação Geracional?**\n\nÉ saber conversar com pessoas de diferentes gerações, entendendo que cada uma tem seu ritmo:\n\n👵 Geração mais velha: valoriza calma, respeito, olho no olho.\n🧑 Geração adulta: gosta de objetividade.\n🧑‍🎓 Geração jovem: quer dinamismo, exemplos práticos e linguagem mais leve.\n\nNão é mudar quem você é — é saber se ajustar pra conectar.'
+                  );
+                }, 4000);
+                setTimeout(() => {
+                  addBotMessage(
+                    'Deixa eu te contar o caso de **Seu Raimundo e Lívia**, lá da feira de Caruaru. 🎪\n\nSeu Raimundo, 68 anos, vende cordel desde menino.\nLívia, 19, chegou pra ajudar o avô a divulgar os folhetos.\n\nEle falava: "Minha fia, posta meus cordel no telefone desse povo aí."\nMas Lívia não entendia o jeito dele explicar.\nE ele não entendia nada do jeito moderno dela falar.\n\nAté que um dia, ela sentou e disse:\n"Vô, me diga do jeitinho do senhor: o que o senhor quer mostrar pras pessoas?"\n\nEle explicou com calma. Ela traduziu pro mundo digital.\nE pronto: juntaram tradição e modernidade.\nHoje os cordéis dele vendem até pra fora do país! 📱🌍\n\nIsso é comunicação geracional funcionando:\ncada um falando do seu jeito, mas se ouvindo com respeito.'
+                  );
+                }, 6000);
+                setTimeout(() => {
+                  addBotMessage('Quando você percebe que alguém não entendeu o que você disse, você faz o quê?', [
+                    { label: 'Repito do mesmo jeito', value: 'repito' },
+                    { label: 'Explico de outra forma', value: 'outra_forma' },
+                    { label: 'Peço pra pessoa dizer o que entendeu', value: 'peco_repetir' }
+                  ]);
+                }, 8000);
+              }
+              else if (currentStep === 'com_conceitos') {
+                let respEntendimento = '';
+                if (input === 'repito') respEntendimento = 'Às vezes precisa mudar o caminho pra chegar no mesmo lugar.';
+                else if (input === 'outra_forma') respEntendimento = 'Isso aí! Comunicação boa é igual água de rio: contorna, mas chega.';
+                else if (input === 'peco_repetir') respEntendimento = 'Excelente! Pedir pra pessoa repetir é uma técnica profissional de comunicação inclusiva.';
+                
+                addBotMessage(respEntendimento);
+                setTimeout(() => {
+                  addBotMessage('Agora responda com sinceridade:\nVocê costuma ouvir mais ou falar mais?', [
+                    { label: 'Eu falo muito', value: 'falo' },
+                    { label: 'Eu escuto, mas às vezes me perco', value: 'escuto_perco' },
+                    { label: 'Eu escuto mais que falo', value: 'escuto' }
+                  ]);
+                  setCurrentStep('com_escuta');
+                }, 2000);
+              }
+              else if (currentStep === 'com_escuta') {
+                let respEscuta = '';
+                if (input === 'falo') respEscuta = 'Eiita! Então bora treinar a escuta ativa.';
+                else if (input === 'escuto_perco') respEscuta = 'Normal! Escutar também é prática.';
+                else if (input === 'escuto') respEscuta = 'Que beleza! Quem escuta bem se comunica melhor.';
+                
+                addBotMessage(respEscuta);
+                setTimeout(() => {
+                  addBotMessage(
+                    '**Dica de Ouro:** 💡\n\nComunicação inclusiva começa com duas perguntas mágicas:\n\n🔹 "Será que a pessoa entendeu?"\n🔹 "Será que a forma como falei acolheu ou afastou?"\n\nSe acolheu: continue.\nSe afastou: ajuste o tom.'
+                  );
+                  setCurrentStep('com_desafio');
+                }, 2000);
+                setTimeout(() => {
+                  addBotMessage(
+                    '**Desafio da Ponte do Entendimento** 🏞️\n\nHoje, tente conversar com alguém de outra geração (mais novo ou mais velho) e faça assim:\n\n1️⃣ Fale com calma\n2️⃣ Use palavras simples\n3️⃣ Pergunte se ficou claro\n4️⃣ Ouça sem interromper\n\nDepois pense: "A ponte ficou forte ou ficou faltando madeira?"\n\nVocê aceita esse desafio?',
+                    [
+                      { label: 'Aceito! Vou fazer isso', value: 'aceito' },
+                      { label: 'Vou tentar', value: 'vou_tentar' }
+                    ]
+                  );
+                }, 4000);
+              }
+              else if (currentStep === 'com_desafio') {
+                let respDesafio = input === 'aceito'
+                  ? 'Excelente! Esse é o espírito da comunicação inclusiva.'
+                  : 'Ótimo! Cada tentativa já é um passo importante.';
+                
+                addBotMessage(respDesafio);
+                setTimeout(() => {
+                  addBotMessage('E pra encerrar essa prosa, me diga qual frase combina mais com sua forma de se comunicar:', [
+                    { label: 'Cada pessoa tem seu jeito de entender', value: 'cada_pessoa' },
+                    { label: 'Falar é fácil, difícil é se fazer entender', value: 'dificil' },
+                    { label: 'Quem conversa se entende', value: 'conversa' }
+                  ]);
+                  setCurrentStep('com_final');
+                }, 2000);
+              }
+              else if (currentStep === 'com_final') {
+                addBotMessage('Tanto faz a frase, todas mostram que você já percebeu o caminho:\ncomunicação boa é aquela que aproxima, não que separa.');
+                setTimeout(() => {
+                  addBotMessage(
+                    'Assim como a ponte liga um lado ao outro, a comunicação liga uma pessoa à outra.\n\nE quando é inclusiva e respeitosa, ah meu amigo… aí ninguém fica pra trás. 🌉\n\n✅ Módulo concluído!'
+                  );
+                  setCurrentStep('modulo_concluido');
+                }, 2000);
+                setTimeout(() => {
+                  addBotMessage('Parabéns! Você completou todas as trilhas! 🎉\n\nQuer revisar algum conteúdo?', [
+                    { label: '🎯 Voltar ao menu', value: 'menu' },
+                    { label: '🐝 Produtividade', value: 'ir_produtividade' },
+                    { label: '⚽ Liderança', value: 'ir_lideranca' },
+                    { label: '🌵 Adaptabilidade', value: 'ir_adaptabilidade' }
+                  ]);
+                }, 4000);
+              }
+              else if (currentStep === 'modulo_concluido') {
+                if (input === 'menu') {
+                  resetToMenu();
+                } else if (input === 'ir_produtividade') {
+                  setCurrentModule('produtividade');
+                  setCurrentStep('prod_intro');
+                  addBotMessage(
+                    'Me diga uma coisa… já teve dia que você trabalhou o dia todinho e no fim pensou:\n\n"Oxente, fiz tanto e parece que não fiz nada"? 😅\n\nPois é! Às vezes a gente corre demais e esquece de pensar se tá correndo pro lado certo.\nProdutividade não é fazer tudo — é fazer o que realmente importa.'
+                  );
+                  setTimeout(() => {
+                    addBotMessage('E quando as tarefas acumulam, como é que você reage?', [
+                      { label: 'Fico agoniado e tento resolver tudo de uma vez 😰', value: 'a' },
+                      { label: 'Faço o que dá, um de cada vez 😅', value: 'b' },
+                      { label: 'Me organizo e planejo o que é mais importante 💪', value: 'c' }
+                    ], 1500);
+                  }, 1000);
+                } else if (input === 'ir_lideranca') {
+                  setCurrentModule('lideranca');
+                  setCurrentStep('lid_intro');
+                  addBotMessage(
+                    'Rapaz, já viu como é puxado liderar gente diferente?\nCada um pensa de um jeito, fala de outro e reage de outro.\nMas é aí que mora a beleza: liderar é entender pessoas, não controlar tarefas.\n\nBora bater um papo sobre isso?'
+                  );
+                  setTimeout(() => {
+                    addBotMessage('Quando você pensa em um bom líder, o que vem na cabeça?', [
+                      { label: 'Dá o exemplo', value: 'exemplo' },
+                      { label: 'Escuta e apoia', value: 'escuta' },
+                      { label: 'Motiva o grupo', value: 'motiva' },
+                      { label: 'Cobra demais', value: 'cobra' }
+                    ], 1500);
+                  }, 1000);
+                } else if (input === 'ir_adaptabilidade') {
+                  setCurrentModule('adaptabilidade');
+                  setCurrentStep('adapt_intro');
+                  addBotMessage(
+                    'Conhece o mandacaru, né? Aquele que cresce firme no meio da seca, mas quando a chuva vem, floresce bonito? 🌵\n\nPois é, hoje a conversa é sobre ser assim também: resistente e cheio de vida!\n\nNa vida, nem tudo sai como a gente planeja.\nÀs vezes o patrão muda o horário, a venda cai, o ônibus atrasa, ou aparece um problema que ninguém esperava.'
+                  );
+                  setTimeout(() => {
+                    addBotMessage('Quando aparece um imprevisto, qual dessas frases parece mais com você?', [
+                      { label: 'Desespero logo, fico sem saber o que fazer 😰', value: 'desespero' },
+                      { label: 'Reclamo, mas depois dou um jeito 😅', value: 'reclamo' },
+                      { label: 'Penso positivo e me viro como posso 💪', value: 'pensopositivo' }
+                    ], 1500);
+                  }, 1000);
+                }
+              }
+              return;
+            }
+
+            // Outros módulos ou voltar ao menu
+            if (input === 'menu') {
+              resetToMenu();
+            } else if (input === 'ir_produtividade') {
+              setCurrentModule('produtividade');
+              setCurrentStep('prod_intro');
+              addBotMessage(
+                'Me diga uma coisa… já teve dia que você trabalhou o dia todinho e no fim pensou:\n\n"Oxente, fiz tanto e parece que não fiz nada"? 😅\n\nPois é! Às vezes a gente corre demais e esquece de pensar se tá correndo pro lado certo.\nProdutividade não é fazer tudo — é fazer o que realmente importa.'
+              );
+              setTimeout(() => {
+                addBotMessage('E quando as tarefas acumulam, como é que você reage?', [
+                  { label: 'Fico agoniado e tento resolver tudo de uma vez 😰', value: 'a' },
+                  { label: 'Faço o que dá, um de cada vez 😅', value: 'b' },
+                  { label: 'Me organizo e planejo o que é mais importante 💪', value: 'c' }
+                ], 1500);
+              }, 1000);
+            } else if (input === 'ir_lideranca') {
+              setCurrentModule('lideranca');
+              setCurrentStep('lid_intro');
+              addBotMessage(
+                'Rapaz, já viu como é puxado liderar gente diferente?\nCada um pensa de um jeito, fala de outro e reage de outro.\nMas é aí que mora a beleza: liderar é entender pessoas, não controlar tarefas.\n\nBora bater um papo sobre isso?'
+              );
+              setTimeout(() => {
+                addBotMessage('Quando você pensa em um bom líder, o que vem na cabeça?', [
+                  { label: 'Dá o exemplo', value: 'exemplo' },
+                  { label: 'Escuta e apoia', value: 'escuta' },
+                  { label: 'Motiva o grupo', value: 'motiva' },
+                  { label: 'Cobra demais', value: 'cobra' }
+                ], 1500);
+              }, 1000);
+            } else if (input === 'ir_adaptabilidade') {
+              setCurrentModule('adaptabilidade');
+              setCurrentStep('adapt_intro');
+              addBotMessage(
+                'Conhece o mandacaru, né? Aquele que cresce firme no meio da seca, mas quando a chuva vem, floresce bonito? 🌵\n\nPois é, hoje a conversa é sobre ser assim também: resistente e cheio de vida!\n\nNa vida, nem tudo sai como a gente planeja.\nÀs vezes o patrão muda o horário, a venda cai, o ônibus atrasa, ou aparece um problema que ninguém esperava.'
+              );
+              setTimeout(() => {
+                addBotMessage('Quando aparece um imprevisto, qual dessas frases parece mais com você?', [
+                  { label: 'Desespero logo, fico sem saber o que fazer 😰', value: 'desespero' },
+                  { label: 'Reclamo, mas depois dou um jeito 😅', value: 'reclamo' },
+                  { label: 'Penso positivo e me viro como posso 💪', value: 'pensopositivo' }
+                ], 1500);
+              }, 1000);
+            }
+          };
+
+          const resetToMenu = () => {
+            setCurrentModule(null);
+            setCurrentStep('selectModule');
+            addBotMessage(`${userName}, escolha uma trilha para continuar:`);
+          };
+
+          const handleOptionClick = (option) => {
+            addUserMessage(option.label);
+            handleUserInput(option.value);
+          };
+
+          const handleSendClick = () => {
+            if (inputRef.current && inputRef.current.value.trim()) {
+              handleUserInput(inputRef.current.value.trim());
+              inputRef.current.value = '';
+            }
+          };
+
+          const handleKeyPress = (e) => {
+            if (e.key === 'Enter') {
+              handleSendClick();
+            }
+          };
+
+          return (
+            <div className="container">
+              <div className="card">
+                <div className="header">
+                  <div className="header-content">
+                    <div className="icon-container">
+                      <MessageCircle />
+                    </div>
+                    <div>
+                      <h1 className="header-title">Trilhas de Desenvolvimento</h1>
+                      <p className="header-subtitle">
+                        {currentModule ? modules[currentModule].name : 'Escolha seu caminho de aprendizado'}
+                      </p>
+                    </div>
+                  </div>
+                  {userName && (
+                    <div className="user-info">
+                      <p className="user-label">Olá,</p>
+                      <p className="user-name">{userName}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="messages-container">
+                  {messages.map((message, index) => (
+                    <div key={index} className={`message-wrapper ${message.type}`}>
+                      <div className="message">
+                        <div className={`message-bubble ${message.type}`}>
+                          {message.text}
+                        </div>
+                        <p className={`message-timestamp ${message.type}`}>
+                          {message.timestamp}
+                        </p>
+                        
+                        {message.options && message.type === 'bot' && index === messages.length - 1 && (
+                          <div className="options-container">
+                            {message.options.map((option, optIndex) => (
+                              <button
+                                key={optIndex}
+                                onClick={() => handleOptionClick(option)}
+                                className="option-button"
+                              >
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {currentStep === 'selectModule' && !waitingForResponse && !currentModule && (
+                    <div className="modules-grid">
+                      {Object.entries(modules).map(([key, module]) => {
+                        const Icon = module.icon;
+                        return (
+                          <div
+                            key={key}
+                            onClick={() => handleUserInput(key)}
+                            className="module-card"
+                          >
+                            <div className={`module-icon ${module.color}`}>
+                              <Icon />
+                            </div>
+                            <div className="module-content">
+                              <div className="module-header">
+                                <h3 className="module-title">{module.name}</h3>
+                                <span className="module-emoji">{module.emoji}</span>
+                              </div>
+                              <p className="module-description">
+                                {module.description}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {waitingForResponse && (
+                    <div className="typing-indicator">
+                      <div className="typing-bubble">
+                        <div className="typing-dot"></div>
+                        <div className="typing-dot"></div>
+                        <div className="typing-dot"></div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div ref={messagesEndRef} />
+                </div>
+
+                <div className="input-area">
+                  {currentStep === 'menu' && !userName ? (
+                    <div className="input-container">
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        placeholder="Digite seu nome..."
+                        className="text-input"
+                        onKeyPress={handleKeyPress}
+                        autoFocus
+                      />
+                      <button onClick={handleSendClick} className="send-button">
+                        Enviar
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="info-text">
+                      💡 Dica: Leia com atenção e escolha as opções que mais combinam com você!
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ChatbotTrilhas />);
+    </script>
+</body>
+</html>
