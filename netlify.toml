@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Configuração do Netlify para EmpregaLAB
 
 [build]
@@ -21,14 +20,3 @@
   from = "/*"
   to = "/index.html"
   status = 200
-=======
-# Configuração do Netlify para Chatbot Trilhas
-
-[build]
-  publish = "."
-  
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
->>>>>>> 2773aaf5ede4d8ab2b64f26e190f3895c6b92659
