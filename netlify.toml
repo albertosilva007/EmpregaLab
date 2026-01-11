@@ -1,0 +1,34 @@
+<<<<<<< HEAD
+# Configuração do Netlify para EmpregaLAB
+
+[build]
+  functions = "netlify/functions"
+  publish = "."
+
+# Redirecionamentos para as APIs (Netlify Functions)
+[[redirects]]
+  from = "/api/entrevista/avaliar"
+  to = "/.netlify/functions/avaliar"
+  status = 200
+
+[[redirects]]
+  from = "/api/entrevista/relatorio"
+  to = "/.netlify/functions/relatorio"
+  status = 200
+
+# Redirecionamento SPA (Single Page Application)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+=======
+# Configuração do Netlify para Chatbot Trilhas
+
+[build]
+  publish = "."
+  
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+>>>>>>> 2773aaf5ede4d8ab2b64f26e190f3895c6b92659
