@@ -325,7 +325,7 @@ async function enviarResposta() {
 
         // Enviar para avaliação
         // Substitua pela URL que o Render vai gerar para você (ex: https://projeto.onrender.com)
-        const API_URL = "https://seu-projeto-no-render.onrender.com";
+        const API_URL = "https://empregalab-1.onrender.com";
 
         // ... dentro da sua função
         const response = await fetch(`${API_URL}/api/entrevista/avaliar`, {
