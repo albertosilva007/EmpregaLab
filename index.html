@@ -532,12 +532,22 @@
                     { label: 'Penso positivo e me viro como posso 💪', value: 'pensopositivo' }
                   ], 1500);
                 }, 1000);
-              } else if (input === 'comunicacao') {
-                setCurrentModule('comunicacao');
-                setCurrentStep('com_intro');
-                addBotMessage(
-                  'Me diga uma coisa… você já tentou explicar algo pra alguém e a pessoa entendeu tudinho errado?\n\nOu falou com outra pessoa e parecia que ela tava falando outra língua?\n\nPois é… comunicação não é só falar.\nÉ fazer o outro compreender.'
-                );
+             } else if (input === 'comunicacao') {
+  setCurrentModule('comunicacao');
+  setCurrentStep('com_intro');
+  addBotMessage(
+    'Me diga uma coisa… você já tentou explicar algo pra alguém e a pessoa entendeu tudinho errado?\n\nOu falou com outra pessoa e parecia que ela tava falando outra língua?\n\nPois é… comunicação não é só falar.\nÉ fazer o outro compreender.'
+  );
+  setTimeout(() => {
+    addBotMessage('E quando você conversa com pessoas de idades diferentes (jovens, adultos, idosos), como é que você costuma agir?', [
+      { label: 'Falo do mesmo jeito com todo mundo 😐', value: 'com_igual' },
+      { label: 'Tento mudar o jeito de explicar 🔄', value: 'com_mudo' },
+      { label: 'Fico meio perdido, sem saber como falar 😕', value: 'com_perdido' }
+    ]);
+  }, 1000);
+} else if (input === 'simulacoes') {
+  window.location.href = '/simulacao-entrevista/simulacao-entrevista.html';
+}
                 setTimeout(() => {
                   addBotMessage('E quando você conversa com pessoas de idades diferentes, jovens, adultos, idosos, como é que você costuma agir?', [
                     { label: 'Falo do mesmo jeito com todo mundo', value: 'mesmo_jeito' },
