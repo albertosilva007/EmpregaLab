@@ -847,4 +847,7 @@ textarea:focus {
     border-radius: 4px;
     font-size: 14px;
 }
+.module-icon.orange {
+    background: linear-gradient(135deg, #f39f0d 0%, #ea580c 100%);
+}
 }

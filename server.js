@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import multer from 'multer';
 import Groq from 'groq-sdk';
 import fs from 'fs';
@@ -48,9 +49,9 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
-    limits: { fileSize: 25 * 1024 * 1024 } 
+    limits: { fileSize: 25 * 1024 * 1024 }
 });
 
 // ===== ENDPOINT: TRANSCRIÇÃO =====
@@ -124,7 +125,7 @@ app.post('/api/entrevista/avaliar', async (req, res) => {
 
         // Validações
         if (!pergunta || !resposta || !categoria) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 erro: 'Dados incompletos',
                 detalhes: 'Pergunta, resposta e categoria são obrigatórios'
             });
@@ -206,7 +207,7 @@ FORMATO DA RESPOSTA (retorne APENAS um objeto JSON válido):
 
     } catch (error) {
         console.error('❌ Erro ao avaliar resposta:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             erro: 'Erro ao processar avaliação',
             detalhes: error.message,
             // Retornar uma avaliação básica mesmo em caso de erro
@@ -254,7 +255,7 @@ app.post('/api/entrevista/relatorio', async (req, res) => {
 
         console.log(`✅ Relatório salvo: ${nomeArquivo}`);
 
-        res.json({ 
+        res.json({
             sucesso: true,
             mensagem: 'Relatório salvo com sucesso',
             arquivo: nomeArquivo
@@ -262,7 +263,7 @@ app.post('/api/entrevista/relatorio', async (req, res) => {
 
     } catch (error) {
         console.error('❌ Erro ao salvar relatório:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             erro: 'Erro ao salvar relatório',
             detalhes: error.message
         });
@@ -273,7 +274,7 @@ app.post('/api/entrevista/relatorio', async (req, res) => {
 app.get('/api/entrevista/relatorios', (req, res) => {
     try {
         const relatoriosDir = path.join(__dirname, 'relatorios');
-        
+
         if (!fs.existsSync(relatoriosDir)) {
             return res.json({ relatorios: [] });
         }
@@ -295,7 +296,7 @@ app.get('/api/entrevista/relatorios', (req, res) => {
 
     } catch (error) {
         console.error('❌ Erro ao listar relatórios:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             erro: 'Erro ao listar relatórios',
             detalhes: error.message
         });
@@ -320,7 +321,7 @@ app.get('/api/entrevista/relatorios/:nome', (req, res) => {
 
     } catch (error) {
         console.error('❌ Erro ao buscar relatório:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             erro: 'Erro ao buscar relatório',
             detalhes: error.message
         });
@@ -334,7 +335,7 @@ app.get('/', (req, res) => res.redirect('/simulacao-entrevista/simulacao-entrevi
 // Tratamento de erros global
 app.use((err, req, res, next) => {
     console.error('❌ Erro não tratado:', err);
-    res.status(500).json({ 
+    res.status(500).json({
         erro: 'Erro interno do servidor',
         detalhes: process.env.NODE_ENV === 'development' ? err.message : 'Erro ao processar requisição'
     });
@@ -342,7 +343,7 @@ app.use((err, req, res, next) => {
 
 // 404 para rotas não encontradas
 app.use((req, res) => {
-    res.status(404).json({ 
+    res.status(404).json({
         erro: 'Rota não encontrada',
         rota: req.url,
         metodo: req.method
