@@ -396,35 +396,49 @@
           const inputRef = useRef(null);
 
           const modules = {
-            produtividade: {
-              name: 'Produtividade e Aprendizagem Contínua',
-              icon: TrendingUp,
-              color: 'yellow',
-              emoji: '🐝',
-              description: 'Aprenda a ser mais produtivo e desenvolver aprendizado contínuo'
-            },
-            lideranca: {
-              name: 'Liderança e Trabalho em Equipe',
-              icon: Users,
-              color: 'blue',
-              emoji: '⚽',
-              description: 'Desenvolva habilidades de liderança e trabalho colaborativo'
-            },
-            adaptabilidade: {
-              name: 'Adaptabilidade e Resiliência',
-              icon: Target,
-              color: 'green',
-              emoji: '🌵',
-              description: 'Fortaleça sua capacidade de enfrentar desafios e mudanças'
-            },
-            comunicacao: {
-              name: 'Comunicação Inclusiva e Geracional',
-              icon: MessageCircle,
-              color: 'purple',
-              emoji: '🌉',
-              description: 'Aprenda a se comunicar de forma clara e respeitosa com todos'
-            }
-          };
+    inteligencia: {
+        name: "Inteligência Emocional",
+        image: "inteligencia.png",
+        color: "pink",
+        emoji: "",
+        description: "Desenvolva autoconhecimento emocional e autorregulação"
+    },
+    adaptabilidade: {
+        name: "Adaptabilidade e Resiliência",
+        image: "adaptabilidade.png",
+        color: "green",
+        emoji: "",
+        description: "Fortaleça sua capacidade de enfrentar desafios"
+    },
+    lideranca: {
+        name: "Liderança e Trabalho em Equipe",
+        image: "lideranca.png",
+        color: "blue",
+        emoji: "",
+        description: "Desenvolva habilidades de liderança e trabalho colaborativo"
+    },
+    comunicacao: {
+        name: "Comunicação Inclusiva",
+        image: "comunicacao.png",
+        color: "purple",
+        emoji: "",
+        description: "Aprenda a se comunicar de forma clara e respeitosa"
+    },
+    produtividade: {
+        name: "Produtividade e Aprendizagem",
+        image: "produtividade.png",
+        color: "yellow",
+        emoji: "",
+        description: "Aprenda a ser mais produtivo e desenvolver aprendizado contínuo"
+    },
+    simulacoes: {
+        name: "Simulações de Entrevista",
+        image: "comunicacao.png",
+        color: "orange",
+        emoji: "🎤",
+        description: "Pratique entrevistas e receba feedback com IA"
+    }
+};
 
           const scrollToBottom = () => {
             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
