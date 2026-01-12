@@ -29,7 +29,7 @@ function iniciarSimulacao() {
     console.log('Iniciando simulação...');
     simulacao.audioEnabled = document.getElementById('audio-enable').checked;
     simulacao.dicasEnabled = document.getElementById('dicas-enable').checked;
-    
+
     // Fallback caso a função selecionarPerguntas esteja em outro script
     if (typeof selecionarPerguntas === 'function') {
         simulacao.perguntas = selecionarPerguntas(7);
@@ -50,11 +50,11 @@ function iniciarSimulacao() {
     simulacao.respostas = [];
     simulacao.pontuacaoTotal = 0;
     simulacao.tempoInicio = Date.now();
-    
+
     iniciarTimer();
     trocarTela('tela-inicial', 'tela-entrevista');
     carregarPergunta();
-    
+
     // Esconder feedback inicialmente
     const feedbackSection = document.getElementById('feedback-section');
     if (feedbackSection) feedbackSection.style.display = 'none';
@@ -63,7 +63,7 @@ function iniciarSimulacao() {
 function trocarTela(telaAtual, proximaTela) {
     const atual = document.getElementById(telaAtual);
     const proxima = document.getElementById(proximaTela);
-    
+
     if (atual) atual.classList.remove('active');
     if (proxima) proxima.classList.add('active');
 }
@@ -71,7 +71,7 @@ function trocarTela(telaAtual, proximaTela) {
 function iniciarTimer() {
     const timerElement = document.getElementById('timer');
     if (simulacao.timerInterval) clearInterval(simulacao.timerInterval);
-    
+
     simulacao.timerInterval = setInterval(() => {
         const tempoDecorrido = Date.now() - simulacao.tempoInicio;
         const minutos = Math.floor(tempoDecorrido / 60000);
@@ -87,24 +87,24 @@ function carregarPergunta() {
     document.getElementById('categoria-badge').textContent = pergunta.categoria;
     document.getElementById('resposta-texto').value = '';
     atualizarContador();
-    
+
     // Resetar dicas
     const dicasContent = document.getElementById('dicas-content');
     if (dicasContent) dicasContent.style.display = 'none';
-    
+
     const btnDicas = document.querySelector('.btn-dicas');
     if (btnDicas) btnDicas.textContent = '💡 Ver Dicas';
-    
+
     // Esconder feedback
     const feedbackSection = document.getElementById('feedback-section');
     if (feedbackSection) feedbackSection.style.display = 'none';
-    
+
     // Mostrar/esconder seção de dicas baseado na configuração
     const dicasSection = document.getElementById('dicas-section');
     if (dicasSection) {
         dicasSection.style.display = simulacao.dicasEnabled ? 'block' : 'none';
     }
-    
+
     // Reabilitar botão enviar
     const btnEnviar = document.getElementById('btn-enviar');
     if (btnEnviar) {
@@ -132,10 +132,10 @@ function toggleDicas() {
         alert('Dicas estão desabilitadas nas configurações.');
         return;
     }
-    
+
     const dicasContent = document.getElementById('dicas-content');
     const btnDicas = document.querySelector('.btn-dicas');
-    
+
     if (dicasContent.style.display === 'none' || dicasContent.style.display === '') {
         carregarDicas();
         dicasContent.style.display = 'block';
@@ -149,7 +149,7 @@ function toggleDicas() {
 function carregarDicas() {
     const pergunta = simulacao.perguntas[simulacao.perguntaAtual];
     const dicasLista = document.getElementById('dicas-lista');
-    
+
     // Dicas por categoria
     const dicasPorCategoria = {
         'Autoconhecimento': [
@@ -183,14 +183,14 @@ function carregarDicas() {
             'Demonstre inteligência emocional'
         ]
     };
-    
+
     const dicas = dicasPorCategoria[pergunta.categoria] || [
         'Seja claro e objetivo na resposta',
         'Use exemplos concretos',
         'Demonstre profissionalismo',
         'Seja honesto e autêntico'
     ];
-    
+
     dicasLista.innerHTML = dicas.map(dica => `<li>${dica}</li>`).join('');
 }
 
@@ -200,7 +200,7 @@ async function toggleAudio() {
         alert('Gravação de áudio está desabilitada nas configurações.');
         return;
     }
-    
+
     if (isRecording) {
         stopRecording();
     } else {
@@ -212,10 +212,10 @@ async function startRecording() {
     try {
         audioChunks = [];
         audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        
-        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
-                         ? 'audio/webm;codecs=opus' 
-                         : 'audio/webm';
+
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+            ? 'audio/webm;codecs=opus'
+            : 'audio/webm';
 
         mediaRecorder = new MediaRecorder(audioStream, { mimeType });
 
@@ -278,29 +278,29 @@ async function enviarAudioParaTranscricao(audioBlob) {
 // === ENVIO DE RESPOSTA ===
 async function enviarResposta() {
     const respostaTexto = document.getElementById('resposta-texto').value.trim();
-    
+
     // Validações
     if (respostaTexto.length < 27) {
         alert('Sua resposta está muito curta. Escreva pelo menos 27 caracteres para uma resposta adequada.');
         return;
     }
-    
+
     if (respostaTexto.length > 500) {
         alert('Sua resposta excedeu o limite de 500 caracteres.');
         return;
     }
-    
+
     // Desabilitar botão durante processamento
     const btnEnviar = document.getElementById('btn-enviar');
     if (btnEnviar) {
         btnEnviar.disabled = true;
         btnEnviar.textContent = 'Enviando...';
     }
-    
+
     // Mostrar seção de feedback com loading
     const feedbackSection = document.getElementById('feedback-section');
     const feedbackContent = document.getElementById('feedback-content');
-    
+
     if (feedbackSection) feedbackSection.style.display = 'block';
     if (feedbackContent) {
         feedbackContent.innerHTML = `
@@ -310,7 +310,7 @@ async function enviarResposta() {
             </div>
         `;
     }
-    
+
     try {
         const pergunta = simulacao.perguntas[simulacao.perguntaAtual];
         const dadosResposta = {
@@ -320,24 +320,27 @@ async function enviarResposta() {
             numeroPergunta: simulacao.perguntaAtual + 1,
             tempoResposta: calcularTempoResposta()
         };
-        
+
         console.log('Enviando dados:', dadosResposta);
-        
+
         // Enviar para avaliação
-        const response = await fetch('/api/entrevista/avaliar', {
+        // Substitua pela URL que o Render vai gerar para você (ex: https://projeto.onrender.com)
+        const API_URL = "https://seu-projeto-no-render.onrender.com";
+
+        // ... dentro da sua função
+        const response = await fetch(`${API_URL}/api/entrevista/avaliar`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(dadosResposta)
         });
-        
         console.log('Status da resposta:', response.status);
-        
+
         // Primeiro pegar o texto bruto
         const textoResposta = await response.text();
         console.log('Resposta bruta do servidor:', textoResposta);
-        
+
         // Tentar fazer parse do JSON
         let avaliacao;
         try {
@@ -345,26 +348,26 @@ async function enviarResposta() {
         } catch (jsonError) {
             throw new Error(`Servidor retornou resposta inválida: ${textoResposta.substring(0, 200)}`);
         }
-        
+
         if (!response.ok) {
             throw new Error(avaliacao.detalhes || avaliacao.message || 'Erro ao avaliar resposta');
         }
-        
+
         // Salvar resposta e avaliação
         simulacao.respostas.push({
             ...dadosResposta,
             avaliacao: avaliacao
         });
-        
+
         // Acumular pontuação
         simulacao.pontuacaoTotal += avaliacao.pontuacao || 0;
-        
+
         // Mostrar feedback
         mostrarFeedback(avaliacao);
-        
+
     } catch (error) {
         console.error('Erro ao enviar resposta:', error);
-        
+
         if (feedbackContent) {
             feedbackContent.innerHTML = `
                 <div class="error-message">
@@ -374,7 +377,7 @@ async function enviarResposta() {
                 </div>
             `;
         }
-        
+
         // Reabilitar botão
         if (btnEnviar) {
             btnEnviar.disabled = false;
@@ -390,7 +393,7 @@ async function enviarResposta() {
 function tentarNovamente() {
     const feedbackSection = document.getElementById('feedback-section');
     if (feedbackSection) feedbackSection.style.display = 'none';
-    
+
     const btnEnviar = document.getElementById('btn-enviar');
     if (btnEnviar) {
         btnEnviar.disabled = false;
@@ -411,11 +414,11 @@ function calcularTempoResposta() {
 function mostrarFeedback(avaliacao) {
     const feedbackContent = document.getElementById('feedback-content');
     const pontuacaoPergunta = document.getElementById('pontuacao-pergunta');
-    
+
     if (pontuacaoPergunta) {
         pontuacaoPergunta.textContent = `${avaliacao.pontuacao || 0}/100`;
     }
-    
+
     if (feedbackContent) {
         feedbackContent.innerHTML = `
             <div class="feedback-card">
@@ -455,7 +458,7 @@ function getScoreClass(pontuacao) {
 // === NAVEGAÇÃO ===
 function proximaPergunta() {
     simulacao.perguntaAtual++;
-    
+
     if (simulacao.perguntaAtual < simulacao.perguntas.length) {
         carregarPergunta();
     } else {
@@ -478,17 +481,17 @@ function pularPergunta() {
                 feedback: 'Pergunta pulada - sem avaliação'
             }
         });
-        
+
         proximaPergunta();
     }
 }
 
 function finalizarSimulacao() {
     clearInterval(simulacao.timerInterval);
-    
+
     const tempoTotal = Math.floor((Date.now() - simulacao.tempoInicio) / 60000);
     const pontuacaoMedia = Math.round(simulacao.pontuacaoTotal / simulacao.perguntas.length);
-    
+
     // Preparar relatório
     const relatorio = {
         respostas: simulacao.respostas,
@@ -497,10 +500,10 @@ function finalizarSimulacao() {
         pontuacaoTotal: simulacao.pontuacaoTotal,
         totalPerguntas: simulacao.perguntas.length
     };
-    
+
     // Salvar relatório
     salvarRelatorio(relatorio);
-    
+
     // Mostrar tela de resultados
     trocarTela('tela-entrevista', 'tela-resultado');
     exibirResultados(relatorio);
@@ -525,10 +528,10 @@ function exibirResultados(relatorio) {
     const scoreNumber = document.getElementById('score-number');
     const scoreDescription = document.getElementById('score-description');
     const tempoTotalEl = document.getElementById('tempo-total');
-    
+
     if (scoreNumber) scoreNumber.textContent = relatorio.pontuacaoMedia;
     if (tempoTotalEl) tempoTotalEl.textContent = `${relatorio.tempoTotal} min`;
-    
+
     // Descrição baseada na pontuação
     let descricao = '';
     if (relatorio.pontuacaoMedia >= 80) {
@@ -540,9 +543,9 @@ function exibirResultados(relatorio) {
     } else {
         descricao = 'Continue praticando! Cada simulação é uma oportunidade de aprendizado.';
     }
-    
+
     if (scoreDescription) scoreDescription.textContent = descricao;
-    
+
     // Animar círculo de progresso
     const scoreProgress = document.getElementById('score-progress');
     if (scoreProgress) {
@@ -550,12 +553,12 @@ function exibirResultados(relatorio) {
         const offset = circumference - (relatorio.pontuacaoMedia / 100) * circumference;
         scoreProgress.style.strokeDashoffset = offset;
     }
-    
+
     // Análise por competência
     const skillsBreakdown = document.getElementById('skills-breakdown');
     if (skillsBreakdown) {
         const categorias = {};
-        
+
         relatorio.respostas.forEach(resp => {
             if (!categorias[resp.categoria]) {
                 categorias[resp.categoria] = {
@@ -566,7 +569,7 @@ function exibirResultados(relatorio) {
             categorias[resp.categoria].total += resp.avaliacao.pontuacao || 0;
             categorias[resp.categoria].count++;
         });
-        
+
         skillsBreakdown.innerHTML = Object.entries(categorias).map(([cat, data]) => {
             const media = Math.round(data.total / data.count);
             return `
@@ -582,7 +585,7 @@ function exibirResultados(relatorio) {
             `;
         }).join('');
     }
-    
+
     // Lista de respostas
     const answersList = document.getElementById('answers-list');
     if (answersList) {
@@ -601,7 +604,7 @@ function exibirResultados(relatorio) {
             </div>
         `).join('');
     }
-    
+
     // Recomendações
     const recommendationsList = document.getElementById('recommendations-list');
     if (recommendationsList) {
@@ -620,7 +623,7 @@ function exibirResultados(relatorio) {
 
 function gerarRecomendacoes(relatorio) {
     const recomendacoes = [];
-    
+
     if (relatorio.pontuacaoMedia < 60) {
         recomendacoes.push({
             icone: '📚',
@@ -628,7 +631,7 @@ function gerarRecomendacoes(relatorio) {
             descricao: 'Aprenda sobre a técnica STAR para responder perguntas comportamentais de forma estruturada.'
         });
     }
-    
+
     if (relatorio.tempoTotal < 10) {
         recomendacoes.push({
             icone: '⏱️',
@@ -636,19 +639,19 @@ function gerarRecomendacoes(relatorio) {
             descricao: 'Respostas bem pensadas geralmente levam um pouco mais de tempo. Não tenha pressa!'
         });
     }
-    
+
     recomendacoes.push({
         icone: '🎯',
         titulo: 'Pratique regularmente',
         descricao: 'Quanto mais você pratica, mais natural e confiante ficará nas entrevistas reais.'
     });
-    
+
     recomendacoes.push({
         icone: '💼',
         titulo: 'Pesquise sobre as empresas',
         descricao: 'Antes de uma entrevista real, sempre pesquise sobre a empresa, sua cultura e valores.'
     });
-    
+
     return recomendacoes;
 }
 
